@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>Login - KaoJob</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+      :root {
+        --primary-50: #f0fdf4;
+        --primary-100: #dcfce7;
+        --primary-200: #bbf7d0;
+        --primary-300: #86efac;
+        --primary-400: #4ade80;
+        --primary-500: #22c55e;
+        --primary-600: #16a34a;
+        --primary-700: #15803d;
+        --primary-800: #166534;
+        --primary-900: #14532d;
+        --primary-950: #052e16;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-50">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+<header class="flex items-center bg-white p-4 justify-between sticky top-0 z-20 shadow-sm">
+<a class="text-xl font-bold text-gray-800" href="index.html">KaoJob</a>
+<button class="flex items-center justify-center rounded-md h-10 w-10 bg-transparent text-gray-700" onclick="toggleMobileMenu()">
+<span class="material-symbols-outlined">
+              menu
+            </span>
+</button>
+<div id="mobile-menu" class="hidden absolute top-16 right-4 bg-white rounded-lg shadow-lg p-4 z-30">
+<nav class="flex flex-col space-y-2">
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="index.html">Home</a>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="jobs.html">Jobs</a>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="post-job.html">Post a Job</a>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="register.html">Register</a>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="contact.html">Contact</a>
+</nav>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<div class="w-full max-w-md space-y-8">
+<div class="text-center">
+<h1 class="text-3xl font-bold text-gray-900">Sign in to KaoJob</h1>
+<p class="mt-2 text-gray-600">Welcome back! Please sign in to your account</p>
+</div>
+<div class="bg-white py-8 px-6 shadow-xl rounded-lg">
+<form onsubmit="handleLogin(event)" class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-gray-700" for="email">Email address</label>
+<div class="mt-1 relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 text-sm">mail</span>
+</div>
+<input class="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500" id="email" name="email" placeholder="Enter your email" required type="email"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="password">Password</label>
+<div class="mt-1 relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 text-sm">lock</span>
+</div>
+<input class="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500" id="password" name="password" placeholder="Enter your password" required type="password"/>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<input class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-2 block text-sm text-gray-700" for="remember-me">Remember me</label>
+</div>
+<div class="text-sm">
+<a class="font-medium text-green-600 hover:text-green-500" href="#" onclick="showMessage('Password reset functionality would be implemented in production')">Forgot your password?</a>
+</div>
+</div>
+<div>
+<button class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" type="submit">
+<span class="absolute left-0 inset-y-0 flex items-center pl-3">
+<span class="material-symbols-outlined h-5 w-5 text-green-500 group-hover:text-green-400">lock</span>
+</span>
+Sign in
+</button>
+</div>
+</form>
+<div class="mt-6">
+<div class="relative">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-300"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-2 bg-white text-gray-500">Demo Accounts</span>
+</div>
+</div>
+<div class="mt-4 space-y-2">
+<button onclick="fillDemoLogin('employer')" class="w-full text-left px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm">
+<div class="font-medium text-gray-900">Demo Employer Account</div>
+<div class="text-gray-500">employer@kaojob.com / demo123</div>
+</button>
+<button onclick="fillDemoLogin('jobseeker')" class="w-full text-left px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm">
+<div class="font-medium text-gray-900">Demo Job Seeker Account</div>
+<div class="text-gray-500">jobseeker@kaojob.com / demo123</div>
+</button>
+</div>
+</div>
+</div>
+<div class="text-center">
+<p class="text-sm text-gray-600">
+Don't have an account? 
+<a class="font-medium text-green-600 hover:text-green-500" href="register.html">Sign up here</a>
+</p>
+</div>
+</div>
+</main>
+<footer class="bg-white border-t border-gray-200">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+<nav class="flex justify-center space-x-6 mb-4">
+<a class="text-gray-500 hover:text-gray-700" href="index.html">Home</a>
+<a class="text-gray-500 hover:text-gray-700" href="jobs.html">Jobs</a>
+<a class="text-gray-500 hover:text-gray-700" href="post-job.html">Post a Job</a>
+<a class="text-gray-500 hover:text-gray-700" href="register.html">Register</a>
+<a class="text-gray-500 hover:text-gray-700" href="contact.html">Contact</a>
+</nav>
+<div class="flex justify-center space-x-6">
+<a class="text-gray-400 hover:text-gray-500" href="#">
+<span class="sr-only">Facebook</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+<path clip-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" fill-rule="evenodd"></path>
+</svg>
+</a>
+<a class="text-gray-400 hover:text-gray-500" href="#">
+<span class="sr-only">Twitter</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+</svg>
+</a>
+<a class="text-gray-400 hover:text-gray-500" href="#">
+<span class="sr-only">LinkedIn</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+<path clip-rule="evenodd" d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-11.5 6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2.5a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5a1.5 1.5 0 0 0-1.5-1.5zM16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2.5a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5a1.5 1.5 0 0 0-1.5-1.5z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+<p class="mt-8 text-center text-base text-gray-400">© 2024 KaoJob. All rights reserved.</p>
+</div>
+</footer>
+</div>
+
+<script>
+// Demo user accounts
+const demoUsers = {
+  'employer@kaojob.com': {
+    password: 'demo123',
+    type: 'employer',
+    name: 'Demo Employer',
+    id: 'emp_001'
+  },
+  'jobseeker@kaojob.com': {
+    password: 'demo123',
+    type: 'jobseeker', 
+    name: 'Demo Job Seeker',
+    id: 'js_001'
+  }
+};
+
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('hidden');
+}
+
+function fillDemoLogin(type) {
+  const email = type === 'employer' ? 'employer@kaojob.com' : 'jobseeker@kaojob.com';
+  document.getElementById('email').value = email;
+  document.getElementById('password').value = 'demo123';
+}
+
+function handleLogin(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const email = formData.get('email');
+  const password = formData.get('password');
+  const rememberMe = formData.get('remember-me');
+  
+  // Check demo users
+  if (demoUsers[email] && demoUsers[email].password === password) {
+    const user = demoUsers[email];
+    
+    // Store user session in localStorage
+    const userSession = {
+      isLoggedIn: true,
+      email: email,
+      name: user.name,
+      type: user.type,
+      id: user.id,
+      loginTime: new Date().toISOString(),
+      rememberMe: rememberMe === 'on'
+    };
+    
+    localStorage.setItem('kaoJobUser', JSON.stringify(userSession));
+    
+    showMessage(`Welcome back, ${user.name}! Redirecting to dashboard...`);
+    
+    // Redirect based on user type
+    setTimeout(() => {
+      if (user.type === 'employer') {
+        window.location.href = 'dashboard-employer.html';
+      } else {
+        window.location.href = 'dashboard-jobseeker.html';
+      }
+    }, 2000);
+  } else {
+    showMessage('Invalid email or password. Please use one of the demo accounts.', 'error');
+  }
+}
+
+function showMessage(text, type = 'success') {
+  const messageDiv = document.createElement('div');
+  const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+  messageDiv.className = `fixed top-20 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-md text-center`;
+  messageDiv.textContent = text;
+  document.body.appendChild(messageDiv);
+  
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 4000);
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('mobile-menu');
+  const menuButton = event.target.closest('button');
+  
+  if (!menu.contains(event.target) && !menuButton) {
+    menu.classList.add('hidden');
+  }
+});
+
+// Check if user is already logged in
+window.addEventListener('load', function() {
+  const userSession = localStorage.getItem('kaoJobUser');
+  if (userSession) {
+    const user = JSON.parse(userSession);
+    if (user.isLoggedIn) {
+      showMessage(`You are already logged in as ${user.name}. Redirecting...`);
+      setTimeout(() => {
+        if (user.type === 'employer') {
+          window.location.href = 'dashboard-employer.html';
+        } else {
+          window.location.href = 'dashboard-jobseeker.html';
+        }
+      }, 2000);
+    }
+  }
+});
+</script>
+</body>
+</html>

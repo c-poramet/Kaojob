@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<title>KaoJob - Hire Experienced and Skilled Seniors</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+      :root {
+        --primary-50: #f0fdf4;
+        --primary-100: #dcfce7;
+        --primary-200: #bbf7d0;
+        --primary-300: #86efac;
+        --primary-400: #4ade80;
+        --primary-500: #22c55e;
+        --primary-600: #16a34a;
+        --primary-700: #15803d;
+        --primary-800: #166534;
+        --primary-900: #14532d;
+        --primary-950: #052e16;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-50">
+<div class="relative flex h-auto min-h-screen w-full flex-col justify-between group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+<div>
+<header class="flex items-center bg-white p-4 justify-between sticky top-0 z-20 shadow-sm">
+<a class="text-xl font-bold text-gray-800" href="index.html">KaoJob</a>
+<div class="flex items-center space-x-4">
+<div id="user-menu" class="hidden items-center space-x-4">
+<span id="user-welcome" class="text-gray-600 text-sm"></span>
+<a id="user-dashboard" class="text-green-600 hover:text-green-700 font-medium" href="#">Dashboard</a>
+<button onclick="handleLogout()" class="text-gray-600 hover:text-gray-900">Logout</button>
+</div>
+<div id="guest-menu" class="flex items-center space-x-4">
+<a class="text-gray-700 hover:text-green-600 font-medium" href="login.html">Login</a>
+<a class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md" href="register.html">Sign Up</a>
+</div>
+<button class="flex items-center justify-center rounded-md h-10 w-10 bg-transparent text-gray-700" onclick="toggleMobileMenu()">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<div id="mobile-menu" class="hidden absolute top-16 right-4 bg-white rounded-lg shadow-lg p-4 z-30">
+<nav class="flex flex-col space-y-2">
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="index.html">Home</a>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="jobs.html">Jobs</a>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="post-job.html">Post a Job</a>
+<div id="mobile-auth-menu">
+<!-- Will be populated by JavaScript -->
+</div>
+<a class="text-gray-700 hover:text-green-600 px-3 py-2" href="contact.html">Contact</a>
+</nav>
+</div>
+</header>
+<main>
+<div class="relative">
+<div class="absolute inset-0 bg-black/40"></div>
+<div class="relative min-h-[60vh] flex flex-col items-center justify-center bg-cover bg-center p-6 text-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCHjgBpGNsfJPygS__liTXFRXd8O-G_KnGSLu2mv40mCVmZ-8D5j5qlMOMQUgQGZ6PntSo8jXH4Nl579mERF2dKxIJgkntd6FB8onomRUWfBxjGe1t-HeIY7GIO2y4Pemxg8XvwOz3cbg58SAjwgPYBpynZQ51evgulnV8xhqkzcE1wTTR7gPWjoif9HX0N5kJAWfmUbrS_tW95Y9nU4pPyolSMWiJruElWCj1JjsA8phljFKQ9fsVY0fNnI3K3TlTcyDWt9eNr5Zr8");'>
+<div class="relative z-10 flex flex-col gap-4">
+<h1 class="text-white text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+                  Hire Experienced and Skilled Seniors
+                </h1>
+<p class="text-white/90 text-lg font-light leading-relaxed md:text-xl">
+                  Connect with a network of seasoned professionals ready to contribute their expertise and dedication to your team.
+                </p>
+</div>
+<div class="relative z-10 mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-sm mx-auto">
+<button onclick="location.href='post-job.html'" class="flex-1 inline-flex items-center justify-center whitespace-nowrap rounded-lg h-12 px-6 text-base font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors">
+                  Post a Job Now
+                </button>
+<button onclick="scrollToFeatures()" class="flex-1 inline-flex items-center justify-center whitespace-nowrap rounded-lg h-12 px-6 text-base font-semibold text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors">
+                  Learn More
+                </button>
+</div>
+</div>
+</div>
+<section id="features" class="py-12 px-4 sm:px-6 lg:px-8">
+<h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Why Choose KaoJob?</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+<div class="flex items-center justify-center h-16 w-16 rounded-full bg-primary-100 text-primary-600 mb-4">
+<span class="material-symbols-outlined text-4xl">
+                    verified_user
+                  </span>
+</div>
+<h3 class="text-xl font-semibold text-gray-800 mb-2">Trusted &amp; Reliable Seniors</h3>
+<p class="text-gray-600">
+                  Our platform features a curated community of experienced professionals with a proven track record of reliability and commitment.
+                </p>
+</div>
+<div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+<div class="flex items-center justify-center h-16 w-16 rounded-full bg-primary-100 text-primary-600 mb-4">
+<span class="material-symbols-outlined text-4xl">
+                    add_box
+                  </span>
+</div>
+<h3 class="text-xl font-semibold text-gray-800 mb-2">Simple Job Posting</h3>
+<p class="text-gray-600">
+                  Easily create and manage job postings with our intuitive interface, designed for efficiency and ease of use.
+                </p>
+</div>
+<div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+<div class="flex items-center justify-center h-16 w-16 rounded-full bg-primary-100 text-primary-600 mb-4">
+<span class="material-symbols-outlined text-4xl">
+                    model_training
+                  </span>
+</div>
+<h3 class="text-xl font-semibold text-gray-800 mb-2">AI-Powered Matching</h3>
+<p class="text-gray-600">
+                  Our advanced matching algorithm connects you with the most qualified senior candidates, saving you time and resources.
+                </p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<footer class="bg-white border-t border-gray-200">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+<nav class="flex justify-center space-x-6 mb-4">
+<a class="text-gray-500 hover:text-gray-700" href="index.html">Home</a>
+<a class="text-gray-500 hover:text-gray-700" href="jobs.html">Jobs</a>
+<a class="text-gray-500 hover:text-gray-700" href="post-job.html">Post a Job</a>
+<a class="text-gray-500 hover:text-gray-700" href="register.html">Register</a>
+<a class="text-gray-500 hover:text-gray-700" href="contact.html">Contact</a>
+</nav>
+<div class="flex justify-center space-x-6">
+<a class="text-gray-400 hover:text-gray-500" href="#">
+<span class="sr-only">Facebook</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+<path clip-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" fill-rule="evenodd"></path>
+</svg>
+</a>
+<a class="text-gray-400 hover:text-gray-500" href="#">
+<span class="sr-only">Twitter</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+</svg>
+</a>
+<a class="text-gray-400 hover:text-gray-500" href="#">
+<span class="sr-only">LinkedIn</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+<path clip-rule="evenodd" d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-11.5 6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2.5a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5a1.5 1.5 0 0 0-1.5-1.5zM16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2.5a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5a1.5 1.5 0 0 0-1.5-1.5z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+<p class="mt-8 text-center text-base text-gray-400">© 2024 KaoJob. All rights reserved.</p>
+</div>
+</footer>
+</div>
+
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('hidden');
+}
+
+function scrollToFeatures() {
+  document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+}
+
+function handleLogout() {
+  localStorage.removeItem('kaoJobUser');
+  showMessage('Logged out successfully!');
+  updateAuthDisplay();
+}
+
+function showMessage(text, type = 'success') {
+  const messageDiv = document.createElement('div');
+  const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+  messageDiv.className = `fixed top-20 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+  messageDiv.textContent = text;
+  document.body.appendChild(messageDiv);
+  
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 3000);
+}
+
+function updateAuthDisplay() {
+  const userSession = localStorage.getItem('kaoJobUser');
+  const userMenu = document.getElementById('user-menu');
+  const guestMenu = document.getElementById('guest-menu');
+  const mobileAuthMenu = document.getElementById('mobile-auth-menu');
+  
+  if (userSession) {
+    const user = JSON.parse(userSession);
+    if (user.isLoggedIn) {
+      // Show user menu
+      userMenu.classList.remove('hidden');
+      userMenu.classList.add('flex');
+      guestMenu.classList.add('hidden');
+      
+      // Update user info
+      document.getElementById('user-welcome').textContent = `Hi, ${user.name}`;
+      const dashboardLink = document.getElementById('user-dashboard');
+      dashboardLink.href = user.type === 'employer' ? 'dashboard-employer.html' : 'dashboard-jobseeker.html';
+      
+      // Update mobile menu
+      mobileAuthMenu.innerHTML = `
+        <a class="text-gray-700 hover:text-green-600 px-3 py-2" href="${user.type === 'employer' ? 'dashboard-employer.html' : 'dashboard-jobseeker.html'}">Dashboard</a>
+        <button onclick="handleLogout()" class="text-left text-gray-700 hover:text-green-600 px-3 py-2 w-full">Logout</button>
+      `;
+      return;
+    }
+  }
+  
+  // Show guest menu
+  userMenu.classList.add('hidden');
+  guestMenu.classList.remove('hidden');
+  mobileAuthMenu.innerHTML = `
+    <a class="text-gray-700 hover:text-green-600 px-3 py-2" href="login.html">Login</a>
+    <a class="text-gray-700 hover:text-green-600 px-3 py-2" href="register.html">Register</a>
+  `;
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('mobile-menu');
+  const menuButton = event.target.closest('button');
+  
+  if (!menu.contains(event.target) && !menuButton) {
+    menu.classList.add('hidden');
+  }
+});
+
+// Initialize auth display on page load
+window.addEventListener('load', function() {
+  updateAuthDisplay();
+});
+</script>
+</body>
+</html>

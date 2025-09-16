@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B600%3B700&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<title>Register - KaoJob</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+      :root {
+        --primary-color: #13a4ec;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-50">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-white justify-between group/design-root" style='font-family: Inter, "Noto Sans", sans-serif;'>
+<header class="sticky top-0 z-10 bg-white shadow-sm">
+<div class="mx-auto flex max-w-7xl items-center justify-between p-4">
+<button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-900">
+<span class="material-symbols-outlined"> menu </span>
+</button>
+<a class="flex items-center gap-2" href="index.html">
+<img alt="KaoJob Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABU1xYApsmoDhNH6-eZyUdaZZp-rSKUaeWnyU6jql8edSvk0ibSDc5SZ5MhPCIfsVrx02crGOU5FDsb3NJhFozyxH0WWgfw3UJ3ejDTdaHC1sf9RmgZ2XZ8jmoTpgLxUXYkO5fuGUsetIf_KI0fcMJx-ZyngwQCZCzsz_4GTIj7zD6HstUCiu54Tew6Tvi5xylHY0FYu0YEzKmX85HeV-gGNRBUDVR3bMcOQAMDLahQ0L3P9ABcKww5vUsZu-aiNIexhNxuygAqG4B"/>
+<span class="text-xl font-bold text-gray-800">KaoJob</span>
+</a>
+<button class="text-gray-600 hover:text-gray-900">
+<span class="material-symbols-outlined"> account_circle </span>
+</button>
+</div>
+<div id="mobile-menu" class="hidden absolute top-16 left-4 bg-white rounded-lg shadow-lg p-4 z-30">
+<nav class="flex flex-col space-y-2">
+<a class="text-gray-700 hover:text-blue-600 px-3 py-2" href="index.html">Home</a>
+<a class="text-gray-700 hover:text-blue-600 px-3 py-2" href="jobs.html">Jobs</a>
+<a class="text-gray-700 hover:text-blue-600 px-3 py-2" href="post-job.html">Post a Job</a>
+<a class="text-gray-700 hover:text-blue-600 px-3 py-2" href="register.html">Register</a>
+<a class="text-gray-700 hover:text-blue-600 px-3 py-2" href="contact.html">Contact</a>
+</nav>
+</div>
+</header>
+<main class="flex-grow bg-gray-50/50 pb-16">
+<div class="mx-auto max-w-md px-4 py-8">
+<div class="text-center mb-8">
+<h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Register for KaoJob</h1>
+<p class="mt-2 text-lg text-gray-600">Join our community and connect with opportunities.</p>
+</div>
+<form onsubmit="handleRegisterSubmit(event)" class="space-y-6" id="register-form" method="POST">
+<div>
+<label class="block text-sm font-medium leading-6 text-gray-900" for="full-name">Full Name</label>
+<div class="relative mt-2">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-gray-400"> person </span>
+</div>
+<input class="block w-full rounded-md border-0 py-3.5 pl-12 pr-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-color)] sm:text-sm sm:leading-6" id="full-name" name="full-name" placeholder="Your Full Name" type="text" required/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-gray-900" for="email">Email Address</label>
+<div class="relative mt-2">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-gray-400"> mail </span>
+</div>
+<input class="block w-full rounded-md border-0 py-3.5 pl-12 pr-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-color)] sm:text-sm sm:leading-6" id="email" name="email" placeholder="your@email.com" type="email" required/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-gray-900" for="password">Password</label>
+<div class="relative mt-2">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-gray-400"> lock </span>
+</div>
+<input class="block w-full rounded-md border-0 py-3.5 pl-12 pr-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-color)] sm:text-sm sm:leading-6" id="password" name="password" placeholder="Enter your password" type="password" required/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-gray-900" for="phone">Phone Number</label>
+<div class="relative mt-2">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-gray-400"> phone </span>
+</div>
+<input class="block w-full rounded-md border-0 py-3.5 pl-12 pr-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-color)] sm:text-sm sm:leading-6" id="phone" name="phone" placeholder="Your phone number" type="tel" required/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-gray-900" for="user-type">I am registering as:</label>
+<div class="relative mt-2">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-gray-400"> badge </span>
+</div>
+<select class="block w-full appearance-none rounded-md border-0 py-3.5 pl-12 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-color)] sm:text-sm sm:leading-6" id="user-type" name="user-type" required>
+<option value="">Select user type</option>
+<option value="employer">Employer (I want to hire)</option>
+<option value="job-seeker">Job Seeker (I'm looking for work)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+<span class="material-symbols-outlined text-gray-400"> expand_more </span>
+</div>
+</div>
+</div>
+<div class="flex items-start">
+<input class="h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-color)] border-gray-300 rounded" id="terms" name="terms" type="checkbox" required>
+<div class="ml-3 text-sm">
+<label class="text-gray-700" for="terms">
+I agree to the <a class="text-[var(--primary-color)] hover:underline" href="#">Terms of Service</a> and <a class="text-[var(--primary-color)] hover:underline" href="#">Privacy Policy</a>
+</label>
+</div>
+</div>
+<div>
+<button class="flex w-full justify-center rounded-md bg-[var(--primary-color)] px-3 py-3.5 text-base font-semibold leading-6 text-white shadow-sm hover:bg-opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-color)] transition-colors" type="submit">
+                Create Account
+              </button>
+</div>
+<div class="text-center">
+<p class="text-sm text-gray-600">
+Already have an account? <a class="text-[var(--primary-color)] hover:underline font-medium" href="#">Sign in</a>
+</p>
+</div>
+</form>
+<div class="hidden mt-8 rounded-md bg-green-50 p-4" id="confirmation">
+<div class="flex">
+<div class="flex-shrink-0">
+<span class="material-symbols-outlined text-green-400"> check_circle </span>
+</div>
+<div class="ml-3">
+<h3 class="text-sm font-medium text-green-800">Registration Successful!</h3>
+<div class="mt-2 text-sm text-green-700">
+<p>Welcome to KaoJob! Your account has been created successfully.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white border-t border-gray-200 py-4">
+<nav class="mx-auto flex max-w-md items-center justify-around px-4">
+<a class="flex flex-col items-center gap-1 text-gray-500 hover:text-[var(--primary-color)]" href="index.html">
+<span class="material-symbols-outlined"> home </span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500 hover:text-[var(--primary-color)]" href="jobs.html">
+<span class="material-symbols-outlined"> search </span>
+<span class="text-xs font-medium">Browse</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white bg-[var(--primary-color)] rounded-full p-3" href="post-job.html">
+<span class="material-symbols-outlined text-2xl"> add </span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500 hover:text-[var(--primary-color)]" href="contact.html">
+<span class="material-symbols-outlined"> chat </span>
+<span class="text-xs font-medium">Messages</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500 hover:text-[var(--primary-color)]" href="register.html">
+<span class="material-symbols-outlined"> person </span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('hidden');
+}
+
+function handleRegisterSubmit(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const fullName = formData.get('full-name');
+  const email = formData.get('email');
+  const userType = formData.get('user-type');
+  
+  // Simulate registration
+  const form = document.getElementById('register-form');
+  const confirmation = document.getElementById('confirmation');
+  
+  form.classList.add('hidden');
+  confirmation.classList.remove('hidden');
+  
+  // Show success message
+  showMessage(`Welcome ${fullName}! Your ${userType} account has been created successfully.`);
+  
+  // Scroll to confirmation
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function showMessage(text) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-md text-center';
+  messageDiv.textContent = text;
+  document.body.appendChild(messageDiv);
+  
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 4000);
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('mobile-menu');
+  const menuButton = event.target.closest('button');
+  
+  if (!menu.contains(event.target) && !menuButton) {
+    menu.classList.add('hidden');
+  }
+});
+</script>
+</body>
+</html>
