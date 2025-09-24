@@ -73,6 +73,12 @@
 <a class="text-gray-700 hover:text-green-600 px-3 py-2" href="post-job.html">Post a Job</a>
 <a class="text-gray-700 hover:text-green-600 px-3 py-2" href="register.html">Register</a>
 <a class="text-gray-700 hover:text-green-600 px-3 py-2" href="contact.html">Contact</a>
+<div class="border-t border-gray-200 mt-2 pt-2">
+<a class="text-red-600 hover:text-red-700 px-3 py-2 flex items-center text-sm" href="dev-export.html">
+<span class="material-symbols-outlined text-sm mr-2">code</span>
+Export API
+</a>
+</div>
 </nav>
 </div>
 </header>
@@ -369,34 +375,46 @@ function getApplicationsFromDatabase() {
 }
 
 function addApplicationToDatabase(applicationData) {
-  const applications = getApplicationsFromDatabase();
-  const userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
-  
-  const newApplication = {
-    id: generateId('app'),
-    jobId: applicationData.jobId,
-    jobTitle: applicationData.jobTitle,
-    applicantId: userSession.id,
-    applicantName: userSession.name,
-    applicantEmail: userSession.email,
-    employerId: applicationData.employerId,
-    status: 'Pending',
-    dateApplied: new Date().toISOString(),
-    experience: applicationData.experience || 'Not specified'
-  };
-  
-  applications.push(newApplication);
-  localStorage.setItem('kaoJobApplications', JSON.stringify(applications));
-  
-  // Add application ID to job's applications array
-  const jobs = getJobsFromDatabase();
-  const jobIndex = jobs.findIndex(job => job.id === applicationData.jobId);
-  if (jobIndex !== -1) {
-    jobs[jobIndex].applications.push(newApplication.id);
-    localStorage.setItem('kaoJobJobs', JSON.stringify(jobs));
+  try {
+    const applications = getApplicationsFromDatabase();
+    const userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
+    
+    if (!userSession || !userSession.id) {
+      throw new Error('User session not found');
+    }
+    
+    const newApplication = {
+      id: generateId('app'),
+      jobId: applicationData.jobId,
+      jobTitle: applicationData.jobTitle,
+      applicantId: userSession.id,
+      applicantName: userSession.name,
+      applicantEmail: userSession.email,
+      employerId: applicationData.employerId,
+      status: 'Pending',
+      dateApplied: new Date().toISOString(),
+      experience: applicationData.experience || 'Not specified'
+    };
+    
+    applications.push(newApplication);
+    localStorage.setItem('kaoJobApplications', JSON.stringify(applications));
+    
+    // Add application ID to job's applications array
+    const jobs = getJobsFromDatabase();
+    const jobIndex = jobs.findIndex(job => job.id === applicationData.jobId);
+    if (jobIndex !== -1) {
+      if (!jobs[jobIndex].applications) {
+        jobs[jobIndex].applications = [];
+      }
+      jobs[jobIndex].applications.push(newApplication.id);
+      localStorage.setItem('kaoJobJobs', JSON.stringify(jobs));
+    }
+    
+    return newApplication;
+  } catch (error) {
+    console.error('Error adding application to database:', error);
+    throw error;
   }
-  
-  return newApplication;
 }
 
 function generateId(prefix) {
@@ -415,7 +433,11 @@ function hasUserApplied(jobId) {
 function renderJobs(jobsToRender = null) {
   const jobsContainer = document.getElementById('job-list');
   const jobs = jobsToRender || getJobsFromDatabase();
+  console.log('Rendering jobs:', jobs.length, 'total jobs found');
+  
   const activeJobs = jobs.filter(job => job.status === 'Active');
+  console.log('Active jobs:', activeJobs.length, 'jobs');
+  
   const userSession = localStorage.getItem('kaoJobUser');
   const currentUser = userSession ? JSON.parse(userSession) : null;
   
@@ -605,6 +627,12 @@ function submitApplication() {
   };
 
   try {
+    // Disable the submit button to prevent double submission
+    const submitBtn = document.querySelector('#applicationForm button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>Submitting...';
+
     addApplicationToDatabase(applicationData);
     closeApplicationModal();
     showMessage(`Application submitted successfully for "${currentJobApplication.jobTitle}"! The employer will review your application.`, 'success');
@@ -615,8 +643,15 @@ function submitApplication() {
     }, 1000);
     
   } catch (error) {
+    console.error('Application submission error:', error);
     showMessage('Failed to submit application. Please try again.', 'error');
-    console.error('Application error:', error);
+    
+    // Re-enable the submit button
+    const submitBtn = document.querySelector('#applicationForm button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Submit Application';
+    }
   }
 }
 
@@ -765,8 +800,62 @@ document.addEventListener('click', function(event) {
 
 // Initialize page
 window.addEventListener('load', function() {
+  // Initialize sample jobs if database is empty
+  initializeSampleJobs();
   renderJobs();
 });
+
+function initializeSampleJobs() {
+  const existingJobs = getJobsFromDatabase();
+  if (existingJobs.length === 0) {
+    const sampleJobs = [
+      {
+        id: 'job_sample_1',
+        title: 'Barista',
+        description: 'Looking for an experienced barista to join our team. Must have knowledge of coffee brewing techniques and excellent customer service skills.',
+        employerId: 'emp_sample_1',
+        employerName: 'Coffee Corner',
+        location: 'Bangkok',
+        workType: 'Part-time',
+        salary: '฿15,000 - ฿18,000/month',
+        contactInfo: 'jobs@coffeecorner.com',
+        status: 'Active',
+        datePosted: new Date().toISOString(),
+        applications: []
+      },
+      {
+        id: 'job_sample_2',
+        title: 'Office Assistant',
+        description: 'Seeking a reliable office assistant to handle administrative tasks, filing, and customer support. Computer skills required.',
+        employerId: 'emp_sample_2',
+        employerName: 'Business Solutions Ltd',
+        location: 'Bangkok',
+        workType: 'Full-time',
+        salary: '฿20,000/month',
+        contactInfo: 'hr@businesssolutions.com',
+        status: 'Active',
+        datePosted: new Date().toISOString(),
+        applications: []
+      },
+      {
+        id: 'job_sample_3',
+        title: 'Gardener',
+        description: 'Experienced gardener needed for maintaining residential gardens. Knowledge of plant care and landscaping preferred.',
+        employerId: 'emp_sample_3',
+        employerName: 'Green Thumb Services',
+        location: 'Chiang Mai',
+        workType: 'Freelance',
+        salary: '฿500/day',
+        contactInfo: 'contact@greenthumb.com',
+        status: 'Active',
+        datePosted: new Date().toISOString(),
+        applications: []
+      }
+    ];
+    
+    localStorage.setItem('kaoJobJobs', JSON.stringify(sampleJobs));
+  }
+}
 </script>
 </body>
 </html>
