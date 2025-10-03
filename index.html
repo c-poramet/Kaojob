@@ -28,6 +28,40 @@
       min-height: max(884px, 100dvh);
     }
   </style>
+    <script>
+    (async function() {
+      // Allow access to login and register pages without authentication
+      const current = location.pathname.split('/').pop() || 'index.html';
+      if (current === 'login.html' || current === 'register.html') return;
+
+      const token = localStorage.getItem('kaoJobToken');
+      if (!token) {
+        // Not authenticated — send to login
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+
+      // Validate token with server; if invalid, clear and redirect
+      try {
+        const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) {
+          localStorage.removeItem('kaoJobToken');
+          localStorage.removeItem('kaoJobUser');
+          location.href = 'login.html';
+          return;
+        }
+        const body = await res.json();
+        if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
+      } catch (e) {
+        // Network error or server down — treat as unauthenticated
+        localStorage.removeItem('kaoJobToken');
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+    })();
+    </script>
   </head>
 <body class="bg-gray-50">
 <div class="relative flex h-auto min-h-screen w-full flex-col justify-between group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>

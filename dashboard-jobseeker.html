@@ -340,7 +340,29 @@ Apply Now
 
 <script>
 // Database functions
-function getJobsFromDatabase() {
+async function getJobsFromDatabase() {
+  try {
+    const res = await fetch('/api/jobs');
+    if (res.ok) {
+      const data = await res.json();
+      return (data.jobs || []).map(j => ({
+        id: j.id,
+        title: j.title,
+        description: j.description,
+        location: j.location,
+        workType: j.work_type || j.workType,
+        salary: j.salary,
+        contactInfo: j.contact_info || j.contactInfo,
+        employerId: j.employer_id || j.employerId,
+        employerName: j.employer_name || j.employerName,
+        status: j.status,
+        datePosted: j.date_posted || j.datePosted,
+        applications: j.applications || []
+      }));
+    }
+  } catch (e) {
+    console.warn('Job API fetch failed, falling back to localStorage:', e && e.message);
+  }
   return JSON.parse(localStorage.getItem('kaoJobJobs') || '[]');
 }
 
@@ -348,10 +370,10 @@ function getApplicationsFromDatabase() {
   return JSON.parse(localStorage.getItem('kaoJobApplications') || '[]');
 }
 
-function loadDashboardData() {
+async function loadDashboardData() {
   const userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
   const applications = getApplicationsFromDatabase();
-  const jobs = getJobsFromDatabase();
+  const jobs = await getJobsFromDatabase();
   
   // Filter applications for current job seeker
   const jobSeekerApplications = applications.filter(app => app.applicantId === userSession.id);
@@ -547,7 +569,7 @@ function showMessage(text, type = 'success') {
 }
 
 // Check authentication and load user info
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
   const userSession = localStorage.getItem('kaoJobUser');
   if (!userSession) {
     showMessage('Please log in to access the dashboard.', 'error');
@@ -573,7 +595,7 @@ window.addEventListener('load', function() {
   }
   
   // Load dashboard data
-  loadDashboardData();
+  await loadDashboardData();
 });
 </script>
 </body>

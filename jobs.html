@@ -366,7 +366,34 @@ placeholder="Job title, company, keywords..."
 
 <script>
 // Database management functions
-function getJobsFromDatabase() {
+async function getJobsFromDatabase() {
+  // Try API first
+  try {
+    const res = await fetch('/api/jobs');
+    if (res.ok) {
+      const data = await res.json();
+      // normalize field names for older frontend code
+      return (data.jobs || []).map(j => ({
+        id: j.id,
+        title: j.title,
+        description: j.description,
+        location: j.location,
+        workType: j.work_type || j.workType,
+        salary: j.salary,
+        contactInfo: j.contact_info || j.contactInfo,
+        employerId: j.employer_id || j.employerId,
+        employerName: j.employer_name || j.employerName,
+        status: j.status,
+        datePosted: j.date_posted || j.datePosted,
+        applications: j.applications || []
+      }));
+    }
+  } catch (e) {
+    // network error - fall through to localStorage
+    console.warn('Job API fetch failed, falling back to localStorage:', e && e.message);
+  }
+
+  // Fallback to localStorage (demo/offline)
   return JSON.parse(localStorage.getItem('kaoJobJobs') || '[]');
 }
 
@@ -374,15 +401,32 @@ function getApplicationsFromDatabase() {
   return JSON.parse(localStorage.getItem('kaoJobApplications') || '[]');
 }
 
-function addApplicationToDatabase(applicationData) {
+async function addApplicationToDatabase(applicationData) {
   try {
     const applications = getApplicationsFromDatabase();
-    const userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
-    
+    // Fetch current user via API when possible
+    let userSession = null;
+    try {
+      const token = localStorage.getItem('kaoJobToken');
+      if (token) {
+        const meRes = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (meRes.ok) {
+          const body = await meRes.json();
+          userSession = { id: body.user.id, name: body.user.name, email: body.user.email, type: body.user.type, isLoggedIn: true };
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to fetch /api/me, falling back to localStorage user', e && e.message);
+    }
+
+    if (!userSession) {
+      userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
+    }
+
     if (!userSession || !userSession.id) {
       throw new Error('User session not found');
     }
-    
+
     const newApplication = {
       id: generateId('app'),
       jobId: applicationData.jobId,
@@ -395,13 +439,13 @@ function addApplicationToDatabase(applicationData) {
       dateApplied: new Date().toISOString(),
       experience: applicationData.experience || 'Not specified'
     };
-    
+
     applications.push(newApplication);
     localStorage.setItem('kaoJobApplications', JSON.stringify(applications));
-    
-    // Add application ID to job's applications array
-    const jobs = getJobsFromDatabase();
-    const jobIndex = jobs.findIndex(job => job.id === applicationData.jobId);
+
+    // Add application ID to job's applications array in localStorage fallback
+    const jobs = await getJobsFromDatabase();
+    const jobIndex = jobs.findIndex(job => String(job.id) === String(applicationData.jobId));
     if (jobIndex !== -1) {
       if (!jobs[jobIndex].applications) {
         jobs[jobIndex].applications = [];
@@ -409,7 +453,7 @@ function addApplicationToDatabase(applicationData) {
       jobs[jobIndex].applications.push(newApplication.id);
       localStorage.setItem('kaoJobJobs', JSON.stringify(jobs));
     }
-    
+
     return newApplication;
   } catch (error) {
     console.error('Error adding application to database:', error);
@@ -430,16 +474,33 @@ function hasUserApplied(jobId) {
   return applications.some(app => app.jobId === jobId && app.applicantId === user.id);
 }
 
-function renderJobs(jobsToRender = null) {
+async function renderJobs(jobsToRender = null) {
   const jobsContainer = document.getElementById('job-list');
-  const jobs = jobsToRender || getJobsFromDatabase();
+  const jobs = jobsToRender || await getJobsFromDatabase();
   console.log('Rendering jobs:', jobs.length, 'total jobs found');
   
   const activeJobs = jobs.filter(job => job.status === 'Active');
   console.log('Active jobs:', activeJobs.length, 'jobs');
   
-  const userSession = localStorage.getItem('kaoJobUser');
-  const currentUser = userSession ? JSON.parse(userSession) : null;
+  // Determine current user via API when possible
+  let currentUser = null;
+  try {
+    const token = localStorage.getItem('kaoJobToken');
+    if (token) {
+      const meRes = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (meRes.ok) {
+        const body = await meRes.json();
+        currentUser = { id: body.user.id, name: body.user.name, type: body.user.type, isLoggedIn: true };
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to fetch /api/me, falling back to localStorage user', e && e.message);
+  }
+
+  if (!currentUser) {
+    const userSession = localStorage.getItem('kaoJobUser');
+    currentUser = userSession ? JSON.parse(userSession) : null;
+  }
   
   // Show loading state
   jobsContainer.innerHTML = `
@@ -469,8 +530,8 @@ function renderJobs(jobsToRender = null) {
     
     jobsContainer.innerHTML = activeJobs.map((job, index) => {
       const hasApplied = currentUser && hasUserApplied(job.id);
-      const isEmployer = currentUser && currentUser.type === 'employer';
-      const isOwnJob = isEmployer && currentUser.id === job.employerId;
+      const isEmployer = currentUser && (currentUser.type === 'employer' || currentUser.type === 'employer');
+      const isOwnJob = isEmployer && String(currentUser.id) === String(job.employerId);
       
       // Add stagger animation class
       const animationDelay = `style="animation-delay: ${index * 0.1}s"`;
@@ -603,7 +664,7 @@ function closeApplicationModal() {
   currentJobApplication = null;
 }
 
-function submitApplication() {
+async function submitApplication() {
   if (!currentJobApplication) return;
 
   const experience = document.getElementById('applicantExperience').value.trim();
@@ -633,13 +694,13 @@ function submitApplication() {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>Submitting...';
 
-    addApplicationToDatabase(applicationData);
+    await addApplicationToDatabase(applicationData);
     closeApplicationModal();
     showMessage(`Application submitted successfully for "${currentJobApplication.jobTitle}"! The employer will review your application.`, 'success');
     
     // Re-render jobs to update button state
-    setTimeout(() => {
-      renderJobs();
+    setTimeout(async () => {
+      await renderJobs();
     }, 1000);
     
   } catch (error) {
@@ -730,12 +791,12 @@ function goBackToDashboard() {
   }
 }
 
-function searchJobs() {
+async function searchJobs() {
   const searchTerm = document.getElementById('search-input').value.toLowerCase();
   const locationFilter = document.getElementById('location-filter').value;
   const typeFilter = document.getElementById('type-filter').value;
-  
-  const allJobs = getJobsFromDatabase();
+
+  const allJobs = await getJobsFromDatabase();
   const filteredJobs = allJobs.filter(job => {
     const matchesSearch = !searchTerm || 
       job.title.toLowerCase().includes(searchTerm) ||
@@ -748,7 +809,7 @@ function searchJobs() {
     return matchesSearch && matchesLocation && matchesType && job.status === 'Active';
   });
   
-  renderJobs(filteredJobs);
+  await renderJobs(filteredJobs);
 }
 
 function editJob(jobId) {
@@ -756,14 +817,66 @@ function editJob(jobId) {
   // In a real app, this would navigate to an edit form
 }
 
-function deleteJob(jobId, jobTitle) {
-  if (confirm(`Are you sure you want to delete the "${jobTitle}" job posting?`)) {
-    const jobs = getJobsFromDatabase();
-    const updatedJobs = jobs.filter(job => job.id !== jobId);
+async function deleteJob(jobId, jobTitle) {
+  if (!confirm(`Are you sure you want to delete the "${jobTitle}" job posting?`)) return;
+
+  const token = localStorage.getItem('kaoJobToken');
+
+  // Helper to perform a safe localStorage delete only if the current local user owns the job
+  async function safeLocalDelete() {
+    const localUserRaw = localStorage.getItem('kaoJobUser');
+    const localUser = localUserRaw ? JSON.parse(localUserRaw) : null;
+    if (!localUser || !localUser.id) {
+      showMessage('You must be logged in as the employer who posted this job to delete it.', 'error');
+      return;
+    }
+
+    const jobs = await getJobsFromDatabase();
+    const job = jobs.find(j => String(j.id) === String(jobId));
+    if (!job) {
+      showMessage('Job not found.', 'error');
+      return;
+    }
+
+    if (String(job.employerId) !== String(localUser.id)) {
+      showMessage('You can only delete your own job postings.', 'error');
+      return;
+    }
+
+    const updatedJobs = jobs.filter(j => String(j.id) !== String(jobId));
     localStorage.setItem('kaoJobJobs', JSON.stringify(updatedJobs));
-    showMessage(`"${jobTitle}" job posting deleted successfully.`);
-    renderJobs();
+    showMessage(`"${jobTitle}" job posting deleted locally.`);
+    await renderJobs();
   }
+
+  if (token) {
+    try {
+      const res = await fetch(`/api/jobs/${jobId}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+      if (res.ok) {
+        showMessage(`"${jobTitle}" job posting deleted successfully.`);
+        await renderJobs();
+        return;
+      }
+
+      // Handle known errors
+      if (res.status === 403) {
+        showMessage('You are not allowed to delete this job (not the owner).', 'error');
+        return;
+      }
+
+      const data = await res.json().catch(() => ({}));
+      showMessage(`Failed to delete job: ${data.error || 'server error'}`, 'error');
+      return;
+    } catch (e) {
+      console.warn('Delete API failed, attempting safe local fallback:', e && e.message);
+      // Try safe local delete (only if owner)
+      await safeLocalDelete();
+      return;
+    }
+  }
+
+  // No token: attempt safe local delete (requires local user ownership)
+  await safeLocalDelete();
 }
 
 function showMessage(text, type = 'success') {
@@ -799,15 +912,15 @@ document.addEventListener('click', function(event) {
 });
 
 // Initialize page
-window.addEventListener('load', function() {
-  // Initialize sample jobs if database is empty
-  initializeSampleJobs();
-  renderJobs();
+window.addEventListener('load', async function() {
+  // Initialize sample jobs if database is empty (local fallback)
+  await initializeSampleJobs();
+  await renderJobs();
 });
 
-function initializeSampleJobs() {
-  const existingJobs = getJobsFromDatabase();
-  if (existingJobs.length === 0) {
+async function initializeSampleJobs() {
+  const existingJobs = await getJobsFromDatabase();
+  if (!existingJobs || existingJobs.length === 0) {
     const sampleJobs = [
       {
         id: 'job_sample_1',

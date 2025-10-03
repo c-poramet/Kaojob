@@ -198,6 +198,33 @@ site/
 
 **Perfect for demos, prototypes, or as a foundation for a full application!**
 
+## 🐳 Run with Docker (production-like)
+
+This repository now includes a minimal Node/Express API and Postgres database to persist users and jobs.
+
+Start the app with Docker Compose (builds server image and starts Postgres):
+
+1. Install Docker and Docker Compose on your machine.
+2. From the project root run:
+
+```bash
+docker compose up --build
+```
+
+The server will be available at http://localhost:3000 and Postgres on 5432.
+
+To apply migrations locally without Docker you can run:
+
+```bash
+npm install
+node server/migrate.js
+```
+
+Notes:
+- Default DB credentials in docker-compose: postgres/postgres and database name `kaojob`.
+- Use `.env` to override `DATABASE_URL` and `JWT_SECRET` when running in production.
+
+
 ---
 
 **KaoJob** - Connecting experienced professionals with meaningful opportunities through modern web technology.

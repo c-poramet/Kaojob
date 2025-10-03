@@ -29,6 +29,34 @@
       font-family: "Public Sans", "Noto Sans", sans-serif;
     }
   </style>
+  <script>
+  (async function() {
+    const current = location.pathname.split('/').pop() || 'index.html';
+    if (current === 'login.html' || current === 'register.html') return;
+    const token = localStorage.getItem('kaoJobToken');
+    if (!token) {
+      localStorage.removeItem('kaoJobUser');
+      location.href = 'login.html';
+      return;
+    }
+    try {
+      const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (!res.ok) {
+        localStorage.removeItem('kaoJobToken');
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+      const body = await res.json();
+      if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
+    } catch (e) {
+      localStorage.removeItem('kaoJobToken');
+      localStorage.removeItem('kaoJobUser');
+      location.href = 'login.html';
+      return;
+    }
+  })();
+  </script>
   </head>
 <body class="bg-gray-50">
 <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">

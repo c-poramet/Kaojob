@@ -161,7 +161,31 @@
 
 <script>
 // Database functions
-function getJobsFromDatabase() {
+async function getJobsFromDatabase() {
+  // Try to fetch from API
+  try {
+    const res = await fetch('/api/jobs');
+    if (res.ok) {
+      const data = await res.json();
+      return (data.jobs || []).map(j => ({
+        id: j.id,
+        title: j.title,
+        description: j.description,
+        location: j.location,
+        workType: j.work_type || j.workType,
+        salary: j.salary,
+        contactInfo: j.contact_info || j.contactInfo,
+        employerId: j.employer_id || j.employerId,
+        employerName: j.employer_name || j.employerName,
+        status: j.status,
+        datePosted: j.date_posted || j.datePosted,
+        applications: j.applications || []
+      }));
+    }
+  } catch (e) {
+    console.warn('Failed to fetch jobs from API, using localStorage fallback', e && e.message);
+  }
+
   return JSON.parse(localStorage.getItem('kaoJobJobs') || '[]');
 }
 
@@ -169,14 +193,32 @@ function getApplicationsFromDatabase() {
   return JSON.parse(localStorage.getItem('kaoJobApplications') || '[]');
 }
 
-function loadDashboardData() {
-  const userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
-  const jobs = getJobsFromDatabase();
+async function loadDashboardData() {
+  // Determine employer id from API /api/me when possible
+  let userSession = null;
+  try {
+    const token = localStorage.getItem('kaoJobToken');
+    if (token) {
+      const meRes = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (meRes.ok) {
+        const body = await meRes.json();
+        userSession = { id: body.user.id, name: body.user.name, type: body.user.type, isLoggedIn: true };
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to fetch /api/me, falling back to localStorage user', e && e.message);
+  }
+
+  if (!userSession) {
+    userSession = JSON.parse(localStorage.getItem('kaoJobUser'));
+  }
+
+  const jobs = await getJobsFromDatabase();
   const applications = getApplicationsFromDatabase();
   
   // Filter data for current employer
-  const employerJobs = jobs.filter(job => job.employerId === userSession.id);
-  const employerApplications = applications.filter(app => app.employerId === userSession.id);
+  const employerJobs = jobs.filter(job => Number(job.employerId) === Number(userSession.id));
+  const employerApplications = applications.filter(app => Number(app.employerId) === Number(userSession.id));
   
   // Update statistics
   updateStatistics(employerJobs, employerApplications);
@@ -354,7 +396,7 @@ function showMessage(text, type = 'success') {
 }
 
 // Check authentication and load user info
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
   const userSession = localStorage.getItem('kaoJobUser');
   if (!userSession) {
     showMessage('Please log in to access the dashboard.', 'error');
@@ -380,7 +422,7 @@ window.addEventListener('load', function() {
   }
   
   // Load dashboard data
-  loadDashboardData();
+  await loadDashboardData();
 });
 </script>
 </body>

@@ -28,6 +28,34 @@
       min-height: max(884px, 100dvh);
     }
   </style>
+    <script>
+    (async function() {
+      const current = location.pathname.split('/').pop() || 'index.html';
+      if (current === 'login.html' || current === 'register.html') return;
+      const token = localStorage.getItem('kaoJobToken');
+      if (!token) {
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+      try {
+        const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) {
+          localStorage.removeItem('kaoJobToken');
+          localStorage.removeItem('kaoJobUser');
+          location.href = 'login.html';
+          return;
+        }
+        const body = await res.json();
+        if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
+      } catch (e) {
+        localStorage.removeItem('kaoJobToken');
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+    })();
+    </script>
   </head>
 <body class="bg-gray-50">
 <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
@@ -325,10 +353,10 @@ function goBackToDashboard() {
   }
 }
 
-function handleJobSubmit(event) {
+async function handleJobSubmit(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
-  
+
   const jobData = {
     title: formData.get('job-title'),
     description: formData.get('job-description'),
@@ -337,17 +365,39 @@ function handleJobSubmit(event) {
     salary: formData.get('salary'),
     contactInfo: formData.get('contact-info')
   };
-  
-  // Add job to database
-  const newJob = addJob(jobData);
-  
+
+  const token = localStorage.getItem('kaoJobToken');
+  if (token) {
+    try {
+      const res = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(jobData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showMessage(`Failed to post job: ${data.error || 'server error'}`, 'error');
+        return;
+      }
   showMessage(`Job "${jobData.title}" has been posted successfully! Redirecting to your dashboard...`);
-  
-  // Reset form and redirect to dashboard
+      setTimeout(() => {
+        event.target.reset();
+        goBackToDashboard();
+      }, 1400);
+      return;
+    } catch (err) {
+      console.error(err);
+      showMessage('Network error while posting job, saving locally for demo.', 'error');
+    }
+  }
+
+  // Fallback: save locally (offline/demo)
+  const newJob = addJob(jobData);
+  showMessage(`Job "${jobData.title}" saved locally (demo mode). Redirecting to your dashboard...`);
   setTimeout(() => {
     event.target.reset();
     goBackToDashboard();
-  }, 2000);
+  }, 1200);
 }
 
 function showMessage(text, type = 'success') {

@@ -52,6 +52,34 @@
       --primary-950: #052e16;
     }
   </style>
+  <script>
+  (async function() {
+    const current = location.pathname.split('/').pop() || 'index.html';
+    if (current === 'login.html' || current === 'register.html') return;
+    const token = localStorage.getItem('kaoJobToken');
+    if (!token) {
+      localStorage.removeItem('kaoJobUser');
+      location.href = 'login.html';
+      return;
+    }
+    try {
+      const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (!res.ok) {
+        localStorage.removeItem('kaoJobToken');
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+      const body = await res.json();
+      if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
+    } catch (e) {
+      localStorage.removeItem('kaoJobToken');
+      localStorage.removeItem('kaoJobUser');
+      location.href = 'login.html';
+      return;
+    }
+  })();
+  </script>
 </head>
 <body class="bg-gray-50">
   <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
@@ -321,7 +349,29 @@ GET /api/jobs?status=Active&location=Bangkok
 
   <script>
     // Database functions (reused from jobs.html)
-    function getJobsFromDatabase() {
+    async function getJobsFromDatabase() {
+      try {
+        const res = await fetch('/api/jobs');
+        if (res.ok) {
+          const data = await res.json();
+          return (data.jobs || []).map(j => ({
+            id: j.id,
+            title: j.title,
+            description: j.description,
+            location: j.location,
+            workType: j.work_type || j.workType,
+            salary: j.salary,
+            contactInfo: j.contact_info || j.contactInfo,
+            employerId: j.employer_id || j.employerId,
+            employerName: j.employer_name || j.employerName,
+            status: j.status,
+            datePosted: j.date_posted || j.datePosted,
+            applications: j.applications || []
+          }));
+        }
+      } catch (e) {
+        console.warn('Job API fetch failed, falling back to localStorage:', e && e.message);
+      }
       return JSON.parse(localStorage.getItem('kaoJobJobs') || '[]');
     }
 
