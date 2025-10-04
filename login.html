@@ -183,18 +183,41 @@ function fillDemoLogin(type) {
   document.getElementById('password').value = 'demo123';
 }
 
-function handleLogin(event) {
+async function handleLogin(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
   const email = formData.get('email');
   const password = formData.get('password');
   const rememberMe = formData.get('remember-me');
-  
-  // Check demo users
+
+  // Try server login first
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.token && data.user) {
+      // Store token and user
+      localStorage.setItem('kaoJobToken', data.token);
+      localStorage.setItem('kaoJobUser', JSON.stringify({ id: data.user.id, name: data.user.name, email: data.user.email, type: data.user.type, isLoggedIn: true }));
+      showMessage(`Welcome back, ${data.user.name}! Redirecting to dashboard...`);
+      setTimeout(() => {
+        if (data.user.type === 'employer') window.location.href = 'dashboard-employer.html';
+        else window.location.href = 'dashboard-jobseeker.html';
+      }, 1000);
+      return;
+    }
+  } catch (e) {
+    // network/CORS error - we'll fallback to demo users below
+    console.warn('Server login failed (network), falling back to demo users', e && e.message);
+  }
+
+  // Fallback to demo users (local-only)
   if (demoUsers[email] && demoUsers[email].password === password) {
     const user = demoUsers[email];
-    
-    // Store user session in localStorage
     const userSession = {
       isLoggedIn: true,
       email: email,
@@ -204,22 +227,16 @@ function handleLogin(event) {
       loginTime: new Date().toISOString(),
       rememberMe: rememberMe === 'on'
     };
-    
     localStorage.setItem('kaoJobUser', JSON.stringify(userSession));
-    
     showMessage(`Welcome back, ${user.name}! Redirecting to dashboard...`);
-    
-    // Redirect based on user type
     setTimeout(() => {
-      if (user.type === 'employer') {
-        window.location.href = 'dashboard-employer.html';
-      } else {
-        window.location.href = 'dashboard-jobseeker.html';
-      }
-    }, 2000);
-  } else {
-    showMessage('Invalid email or password. Please use one of the demo accounts.', 'error');
+      if (user.type === 'employer') window.location.href = 'dashboard-employer.html';
+      else window.location.href = 'dashboard-jobseeker.html';
+    }, 1000);
+    return;
   }
+
+  showMessage('Invalid email or password. Please use one of the demo accounts or register.', 'error');
 }
 
 function showMessage(text, type = 'success') {

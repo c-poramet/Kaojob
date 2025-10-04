@@ -56,6 +56,52 @@
       min-height: max(884px, 100dvh);
     }
   </style>
+  <script>
+  (function() {
+    function parseJwt(token) {
+      try {
+        const b = token.split('.')[1];
+        const str = atob(b.replace(/-/g, '+').replace(/_/g, '/'));
+        return JSON.parse(decodeURIComponent(escape(str)));
+      } catch (e) { return null; }
+    }
+
+    (async function guard() {
+      const current = location.pathname.split('/').pop() || 'index.html';
+      if (current === 'login.html' || current === 'register.html') return;
+
+      const token = localStorage.getItem('kaoJobToken');
+      if (!token) {
+        // no token -> redirect to login
+        localStorage.removeItem('kaoJobUser');
+        location.href = 'login.html';
+        return;
+      }
+
+      const payload = parseJwt(token);
+      if (payload && payload.id) {
+        const user = { id: payload.id, type: payload.type || payload.sub || 'jobseeker', name: payload.name || '', isLoggedIn: true };
+        localStorage.setItem('kaoJobUser', JSON.stringify(user));
+      }
+
+      try {
+        const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('kaoJobToken');
+          localStorage.removeItem('kaoJobUser');
+          location.href = 'login.html';
+          return;
+        }
+        if (res.ok) {
+          const body = await res.json();
+          if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
+        }
+      } catch (e) {
+        console.warn('Token validation failed (network/cors):', e && e.message);
+      }
+    })();
+  })();
+  </script>
   </head>
 <body class="bg-gray-50">
 <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
