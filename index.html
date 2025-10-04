@@ -29,37 +29,55 @@
     }
   </style>
     <script>
-    (async function() {
-      // Allow access to login and register pages without authentication
-      const current = location.pathname.split('/').pop() || 'index.html';
-      if (current === 'login.html' || current === 'register.html') return;
-
-      const token = localStorage.getItem('kaoJobToken');
-      if (!token) {
-        // Not authenticated — send to login
-        localStorage.removeItem('kaoJobUser');
-        location.href = 'login.html';
-        return;
+    (function() {
+      // Lightweight client-side auth guard that decodes JWT locally so the UI doesn't
+      // redirect users when the API is temporarily unreachable or hosted on another origin.
+      function parseJwt(token) {
+        try {
+          const b = token.split('.')[1];
+          const str = atob(b.replace(/-/g, '+').replace(/_/g, '/'));
+          return JSON.parse(decodeURIComponent(escape(str)));
+        } catch (e) {
+          return null;
+        }
       }
 
-      // Validate token with server; if invalid, clear and redirect
-      try {
-        const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
-        if (!res.ok) {
-          localStorage.removeItem('kaoJobToken');
+      (async function guard() {
+        const current = location.pathname.split('/').pop() || 'index.html';
+        if (current === 'login.html' || current === 'register.html') return;
+
+        const token = localStorage.getItem('kaoJobToken');
+        if (!token) {
           localStorage.removeItem('kaoJobUser');
           location.href = 'login.html';
           return;
         }
-        const body = await res.json();
-        if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
-      } catch (e) {
-        // Network error or server down — treat as unauthenticated
-        localStorage.removeItem('kaoJobToken');
-        localStorage.removeItem('kaoJobUser');
-        location.href = 'login.html';
-        return;
-      }
+
+        const payload = parseJwt(token);
+        if (payload && payload.id) {
+          // Populate local user from token payload (non-authoritative but good for UI)
+          const user = { id: payload.id, type: payload.type || payload.sub || 'jobseeker', name: payload.name || '', isLoggedIn: true };
+          localStorage.setItem('kaoJobUser', JSON.stringify(user));
+        }
+
+        // Try to refresh/validate token with server, but do NOT redirect on network errors.
+        try {
+          const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem('kaoJobToken');
+            localStorage.removeItem('kaoJobUser');
+            location.href = 'login.html';
+            return;
+          }
+          if (res.ok) {
+            const body = await res.json();
+            if (body && body.user) localStorage.setItem('kaoJobUser', JSON.stringify(body.user));
+          }
+        } catch (e) {
+          // Network error: don't redirect; allow UI to load and surface API errors where needed.
+          console.warn('Could not validate token with server (network or cross-origin):', e && e.message);
+        }
+      })();
     })();
     </script>
   </head>
